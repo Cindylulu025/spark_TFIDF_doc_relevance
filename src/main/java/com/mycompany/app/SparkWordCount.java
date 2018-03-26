@@ -25,11 +25,11 @@ public final class SparkWordCount {
         // set the input files
         JavaPairRDD<String, String> FilenameContentRDD = sc.wholeTextFiles("datafiles/");
         Long FileCounts = Files.list(Paths.get("datafiles/")).count();
-        // System.err.println("\n\n******* file count:\n"+FileCounts);
+        System.err.println("\n\n******* file count:\n"+FileCounts);
         List <String> StopWords = Arrays.asList(String.join("\n", Files.readAllLines(Paths.get("stopwords.txt"))).split("\n"));
-        // System.err.println("\n\n******* stopword count:\n"+StopWords.size());
+        System.err.println("\n\n******* stopword count:\n"+StopWords.size());
         List <String> QueryWords = Arrays.asList(String.join("\n", Files.readAllLines(Paths.get("query.txt"))).split("\\W+"));
-        // System.err.println("\n\n******* queryword count:\n"+QueryWords.size());
+        System.err.println("\n\n******* queryword count:\n"+QueryWords.size());
 
         // Step 1 #################################
         // Flapmap through all files' content (values) using flatmapvalues
@@ -38,7 +38,7 @@ public final class SparkWordCount {
                 // Filter out stopwords
                 .filter(tuple -> !StopWords.contains(tuple._2()))
                 // Generate new key value pairs (word@@file,1)
-                .mapToPair(tuple -> new Tuple2<>(tuple._2()+"@@"+tuple._1.split("/")[6], 1))
+                .mapToPair(tuple -> new Tuple2<>(tuple._2()+"@@"+tuple._1.split("/")[tuple._1.split("/").length-1], 1))
                 // Word count
                 .reduceByKey((a, b) -> a + b);
 
